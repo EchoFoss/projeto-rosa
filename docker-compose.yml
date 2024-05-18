@@ -1,0 +1,13 @@
+﻿services:
+
+  mvc:
+    image: mvc
+    build:
+      context: .
+      dockerfile: MVC/Dockerfile
+
+  webapi:
+    image: webapi
+    build:
+      context: .
+      dockerfile: WebApi/Dockerfile
