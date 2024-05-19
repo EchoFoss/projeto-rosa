@@ -10,28 +10,30 @@ namespace WebApi.Controllers;
 public class PerfilController(DbCtx ctx) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> PostPerfil([FromBody] Perfil perfil)
+    public async Task<IActionResult> PostPerfil([FromBody] CreatePerfilDto perfil)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        await ctx.Perfis.AddAsync(perfil);
+        var perfilCriado = perfil.toPerfil();
+
+        await ctx.Perfis.AddAsync(perfilCriado);
         await ctx.SaveChangesAsync();
         return Ok();
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllPerfis([FromQuery] int id)
+    public async Task<IActionResult> GetAllPerfis()
     {
         var perfis = await ctx.Perfis.ToListAsync();
         return Ok(perfis);
     }
 
     [HttpGet]
-    [Route("{id:int}")]
-    public async Task<IActionResult> GetPerfilById([FromRoute] int id)
+    [Route("{id:guid}")]
+    public async Task<IActionResult> GetPerfilById([FromRoute] Guid id)
     {
         var perfil = await ctx.Perfis.FirstOrDefaultAsync(p => p.Id == id);
         if (perfil is null)
@@ -43,8 +45,8 @@ public class PerfilController(DbCtx ctx) : ControllerBase
     }
 
     [HttpPatch]
-    [Route("{id:int}")]
-    public async Task<IActionResult> UpdatePerfil(int id, Perfil perfil)
+    [Route("{id:guid}")]
+    public async Task<IActionResult> UpdatePerfil([FromRoute] Guid id, Perfil perfil)
     {
         var perfilExistente = await ctx.Perfis.FirstOrDefaultAsync(p => p.Id == id);
 
@@ -62,8 +64,8 @@ public class PerfilController(DbCtx ctx) : ControllerBase
     }
 
     [HttpDelete]
-    [Route("{id:int}")]
-    public async Task<IActionResult> DeletePerfil(int id)
+    [Route("{id:guid}")]
+    public async Task<IActionResult> DeletePerfil([FromRoute] Guid id)
     {
         var perfilDeletado = await ctx.Perfis.FirstOrDefaultAsync(p => p.Id == id);
 
